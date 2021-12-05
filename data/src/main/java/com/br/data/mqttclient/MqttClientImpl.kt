@@ -119,6 +119,6 @@ class MqttClientImpl(
 
     private fun buildMqttOptions() = MqttConnectOptions().apply {
         userName = "gabrixx"
-        password = "aio_BRhW607YFrzqXKrW1e8Dz4z66n2t".toCharArray()
+        password = "PUT_KEY_HERE".toCharArray()
     }
 }
