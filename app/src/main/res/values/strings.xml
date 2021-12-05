@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MQTT Project</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="home_publish_text">Publish</string>
+    <string name="home_connect_button_text">Connect</string>
+    <string name="home_subscribe_text">Subscribe</string>
+    <string name="publish_auto_fill_button_text">Auto fill</string>
+    <string name="unsubscribe_button_text">Unsubscribe</string>
+</resources>

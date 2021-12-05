@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.br.mqttproject.ui.home.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_publishFragment"
+            app:destination="@id/publishFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_subscribeFragment"
+            app:destination="@id/subscribeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/publishFragment"
+        android:name="com.br.mqttproject.ui.publish.PublishFragment"
+        android:label="Publish">
+        <action
+            android:id="@+id/action_publishFragment_to_homeFragment"
+            app:popUpTo="@id/homeFragment" />
+        <action
+            android:id="@+id/action_publishFragment_to_homeFragment2"
+            app:popUpTo="@id/homeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/subscribeFragment"
+        android:name="com.br.mqttproject.ui.receive.SubscribeFragment"
+        android:label="Subscribe">
+        <action
+            android:id="@+id/action_subscribeFragment_to_homeFragment"
+            app:popUpTo="@id/homeFragment" />
+    </fragment>
+
+
+</navigation>
