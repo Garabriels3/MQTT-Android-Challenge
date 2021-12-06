@@ -6,9 +6,11 @@ import androidx.lifecycle.asLiveData
 import com.br.domain.usecase.publish.PublishUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -18,8 +20,6 @@ import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -32,6 +32,8 @@ class PublishViewsModelTest {
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
 
+    private val testDispatcher = TestCoroutineDispatcher()
+
     private lateinit var viewModel: PublishViewModel
 
     private var publishUseCase: PublishUseCase = mock()
@@ -40,7 +42,7 @@ class PublishViewsModelTest {
 
     @Before
     fun setup() {
-        Dispatchers.setMain(Dispatchers.Unconfined)
+        Dispatchers.setMain(testDispatcher)
     }
 
     @After
@@ -49,7 +51,7 @@ class PublishViewsModelTest {
     }
 
     @Test
-    fun `publish should send message when success`() = runBlocking {
+    fun `publish should send message when success`() {
         // Given
         createViewModel()
         whenever(publishUseCase.publishMessage("gabrixx/feeds/test", "test"))
@@ -76,7 +78,35 @@ class PublishViewsModelTest {
         }
     }
 
+    @Test
+    fun `publish should return a exception when error`() {
+        // Given
+        createViewModel()
+        whenever(publishUseCase.publishMessage("gabrixx/feeds/test", "test"))
+            .thenReturn(flow { throw Exception() })
+
+        // When
+        viewModel.state.asLiveData().observeForever(stateObserver)
+        viewModel.publish("test")
+
+        // Then
+        inOrder(stateObserver) {
+            verify(stateObserver).onChanged(
+                PublishStates(onLoadingPublish = false)
+            )
+            verify(stateObserver).onChanged(
+                PublishStates(onLoadingPublish = true)
+            )
+            verify(stateObserver).onChanged(
+                PublishStates(
+                    onErrorPublish = "Error publishing data!",
+                    onLoadingPublish = false
+                )
+            )
+        }
+    }
+
     private fun createViewModel() {
-        viewModel = PublishViewModel(publishUseCase)
+        viewModel = PublishViewModel(publishUseCase, testDispatcher)
     }
 }
