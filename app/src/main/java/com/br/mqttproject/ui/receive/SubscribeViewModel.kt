@@ -3,6 +3,7 @@ package com.br.mqttproject.ui.receive
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.br.domain.usecase.messagearrived.SubscribeUseCase
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,10 @@ import kotlinx.coroutines.launch
 
 private const val TOPIC = "gabrixx/feeds/test"
 
-class SubscribeViewModel(private val subscribeUseCase: SubscribeUseCase) :
+class SubscribeViewModel(
+    private val subscribeUseCase: SubscribeUseCase,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) :
     ViewModel() {
 
     val state: StateFlow<SubscribeStates> get() = _state
@@ -27,7 +31,7 @@ class SubscribeViewModel(private val subscribeUseCase: SubscribeUseCase) :
     fun onMessageArrived() {
         viewModelScope.launch {
             subscribeUseCase.messageArrived()
-                .flowOn(Dispatchers.IO)
+                .flowOn(dispatcher)
                 .onStart { _state.value = internalState.copy(onLoadingMessageArriving = true) }
                 .onCompletion {
                     _state.value = internalState.copy(onLoadingMessageArriving = false)

@@ -3,6 +3,7 @@ package com.br.mqttproject.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.br.domain.usecase.connect.ConnectMqttUseCase
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,10 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val connectMqttUseCase: ConnectMqttUseCase) : ViewModel() {
+class HomeViewModel(
+    private val connectMqttUseCase: ConnectMqttUseCase,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) : ViewModel() {
 
     val state: StateFlow<HomeStates> get() = _state
 
@@ -24,7 +28,7 @@ class HomeViewModel(private val connectMqttUseCase: ConnectMqttUseCase) : ViewMo
     fun connect() {
         viewModelScope.launch {
             connectMqttUseCase.connectMqtt()
-                .flowOn(Dispatchers.IO)
+                .flowOn(dispatcher)
                 .onStart {
                     _state.value =
                         internalState.copy(onLoading = true)

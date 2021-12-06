@@ -3,6 +3,7 @@ package com.br.mqttproject.ui.publish
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.br.domain.usecase.publish.PublishUseCase
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +19,8 @@ private const val ERROR = "Error publishing data!"
 private const val SUCCESS = "Data published successfully!"
 
 class PublishViewModel(
-    private val publishUseCase: PublishUseCase
+    private val publishUseCase: PublishUseCase,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     val state: StateFlow<PublishStates> get() = _state
@@ -33,7 +35,7 @@ class PublishViewModel(
                 TOPIC,
                 msg
             )
-                .flowOn(Dispatchers.IO)
+                .flowOn(dispatcher)
                 .onStart {
                     _state.value = internalState.copy(onLoadingPublish = true)
                 }
