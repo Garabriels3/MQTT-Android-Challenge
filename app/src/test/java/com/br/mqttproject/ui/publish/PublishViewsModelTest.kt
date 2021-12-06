@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import com.br.domain.usecase.publish.PublishUseCase
+import com.br.mqttproject.testrules.MainCoroutineRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
@@ -32,23 +33,14 @@ class PublishViewsModelTest {
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
 
-    private val testDispatcher = TestCoroutineDispatcher()
+    @get:Rule
+    val coroutineRule = MainCoroutineRule()
 
     private lateinit var viewModel: PublishViewModel
 
     private var publishUseCase: PublishUseCase = mock()
 
     private var stateObserver: Observer<PublishStates> = mock()
-
-    @Before
-    fun setup() {
-        Dispatchers.setMain(testDispatcher)
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
 
     @Test
     fun `publish should send message when success`() {
@@ -64,7 +56,7 @@ class PublishViewsModelTest {
         // Then
         inOrder(stateObserver) {
             verify(stateObserver).onChanged(
-                PublishStates(onLoadingPublish = false)
+                PublishStates()
             )
             verify(stateObserver).onChanged(
                 PublishStates(onLoadingPublish = true)
@@ -92,7 +84,7 @@ class PublishViewsModelTest {
         // Then
         inOrder(stateObserver) {
             verify(stateObserver).onChanged(
-                PublishStates(onLoadingPublish = false)
+                PublishStates()
             )
             verify(stateObserver).onChanged(
                 PublishStates(onLoadingPublish = true)
@@ -107,6 +99,6 @@ class PublishViewsModelTest {
     }
 
     private fun createViewModel() {
-        viewModel = PublishViewModel(publishUseCase, testDispatcher)
+        viewModel = PublishViewModel(publishUseCase, coroutineRule.dispatcher)
     }
 }

@@ -49,7 +49,7 @@ class SubscribeViewModel(
     fun subscribeOnTopic() {
         viewModelScope.launch {
             subscribeUseCase.subscribeOnTopic(TOPIC)
-                .flowOn(Dispatchers.IO)
+                .flowOn(dispatcher)
                 .onStart { _state.value = internalState.copy(onLoadingSubscribe = true) }
                 .onCompletion { _state.value = internalState.copy(onLoadingSubscribe = false) }
                 .catch {
@@ -64,7 +64,7 @@ class SubscribeViewModel(
     fun unsubscribeOnTopic() {
         viewModelScope.launch {
             subscribeUseCase.unsubscribeOnTopic(TOPIC)
-                .flowOn(Dispatchers.IO)
+                .flowOn(dispatcher)
                 .onStart { _state.value = internalState.copy(onLoadingSubscribe = true) }
                 .onCompletion { _state.value = internalState.copy(onLoadingSubscribe = false) }
                 .catch {
